@@ -5,8 +5,10 @@ const io = std.io;
 const eql = std.mem.eql;
 const warn = std.debug.warn;
 
+/// default flag, to run one line and die
 const kill = "-k";
 
+/// if we get less than 3 args, we show this
 const help =
     \\
     \\Should be called with at least 2 args: 'convert from' and 'convert to' bases.
@@ -24,6 +26,8 @@ pub fn main() !void {
         warn(help);
         return;
     }
+    
+    /// we use this allocation strategy, to free everything in the end of the execution, as advised in the docs
     var direct_allocator = std.heap.DirectAllocator.init();
     defer direct_allocator.deinit();
 
@@ -47,6 +51,9 @@ pub fn main() !void {
     }
 }
 
+/// gets 2 params, base to convert from and base to convert to.
+/// reads a line form stdin and tries to convert, then prints out to stderr (simpler than stdout)
+/// if buffer comes unchanged (no line read) kills program
 fn workOneLine(from_base: u8, to_base: u8) !void {
     var buffer = []u8{0} ** 100;
     const line = try io.readLineSlice(buffer[0..]);
